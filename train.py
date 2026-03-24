@@ -327,6 +327,27 @@ def train():
         valid_epoch(dataloader=dataloader_test, epoch=epoch, save_dir=f"./valid_results/{epoch}")
 
 
+
+'''
+推理测试集并保存
+'''
+def valid():
+    transforms_ = [transforms.Resize(img_size),
+                   transforms.ToTensor(),
+                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+
+    dataloader_test = DataLoader(
+        ImageDataset(root=dataroot, transforms_=transforms_, unaligned=True, mode="test"),  # 读取数据集 testA和testB下的所有图像
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=1
+    )
+    EPO=230
+    load_weight(load_epoch=EPO)
+    valid_epoch(dataloader_test,0,f"./infer_results/{EPO}")
+
+
+
 '''
 推理函数
 '''
