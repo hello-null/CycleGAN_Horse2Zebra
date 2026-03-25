@@ -30,7 +30,7 @@ epoch_num = 200     # 论文总轮次 200
 lambda_cyc = 10     # 循环损失权重 λ=10（论文3.3节）
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 decay_epoch=100     # 多少轮次后学习率线性降低
-offset=0            # 用于中断后再次加载模型训练，如果训练到100epoch后中断，这里就得填写100
+offset=0            # 用于中断后再次加载模型训练，如果训练到100epoch后中断，这里就得填写101，具体详细看util.py中的LambdaLR实现，当然这是我用AI写的，不对的话你可以改改。
 lambda_idt = 0.5  # 身份损失权重，论文中取0.5（仅当训练非对称任务时启用）
 dataroot=r"H:\datasets\Horse2Zebra\horse2zebra" # 文件路径，文件结构如下所示
 # horse2zebra/
@@ -106,7 +106,7 @@ def train_epoch(dataloader,epoch,save_dir,save_pth):
         optimizer_G.zero_grad()
 
         # 0. 身份映射损失 (论文 3.2 节 Identity Loss)
-        # G_A2B 是 A→B（斑马→马），那你把真实的马（real_B）喂给 G_A2B，它应该 “几乎不动”，直接输出马本身。 这就是身份映射损失的意义！
+        # G_A2B 是 A→B（马→斑马），那你把真实的斑马（real_B）喂给 G_A2B，它应该 “几乎不动”，直接输出斑马本身。 这就是身份映射损失的意义！
         idt_B = G_A2B(real_B)  # 输入B到G_A2B，应输出接近B的图像
         idt_A = G_B2A(real_A)  # 输入A到G_B2A，应输出接近A的图像
         loss_idt_B = cycle_loss(idt_B, real_B)  # 复用L1损失（和循环损失一致）
